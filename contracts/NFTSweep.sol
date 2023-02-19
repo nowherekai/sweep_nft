@@ -9,6 +9,8 @@ import "hardhat/console.sol";
 contract NFTSweep is Ownable {
   address private constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
 
+  event BuyLog(address marketAddr, bool success);
+
   struct OpenseaOrder {
     uint256 value;
     bytes orderData;
@@ -29,12 +31,13 @@ contract NFTSweep is Ownable {
     market.marketAddr = newAddr;
   }
 
+  //从Opensea 批量购买, orderData 是seaport所需数据
   function batchBuyOpenSea(
     OpenseaOrder[] memory openseaOrders
   ) payable external {
     for (uint256 i = 0; i < openseaOrders.length; i++) {
       // seaport 1.1
-      SEAPORT.call{value:openseaOrders[i].value}(openseaOrders[i].orderData);
+      address(SEAPORT).call{value:openseaOrders[i].value}(openseaOrders[i].orderData);
     }
   }
 
@@ -44,12 +47,16 @@ contract NFTSweep is Ownable {
     bytes orderData;
   }
 
+
+  //从不同NFT市场购买,需要先注册好对应市场的合约地址(使用addMarket)
   function batchBuyFromMarkets(GeneralOrder[] memory orders) payable external {
+    console.log("batchBuyFromMarkets");
     for (uint256 i = 0; i < orders.length; i++) {
       address marketAddr = markets[orders[i].marketId].marketAddr;
       (bool success, ) = marketAddr.call{value: orders[i].value}(orders[i].orderData);
-      console.log(success);
-      //TODO return remain mgs.value to user, if some order buy failed or user supply msg.value exceed needed ether
+      //测试用
+      emit BuyLog(marketAddr, success);
+      //TODO return remain mgs.value to user
     }
   }
 }

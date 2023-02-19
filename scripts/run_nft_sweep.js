@@ -46,12 +46,18 @@ async function sweepNft(nftSweepAddress, orderDatas) {
 
 async function main() {
   let orderData1 = generateOpenseaCalldata();
-  let orders = [ { marketId: 0, value: ethers.utils.parseEther("0.05"), orderData: orderData1 },
-    { marketId: 0, value: ethers.utils.parseEther("0.05"), orderData: orderData1 },
+  // let orders = [ { marketId: 0, value: ethers.utils.parseEther("0.05"), orderData: orderData1 },
+  //   { marketId: 0, value: ethers.utils.parseEther("0.05"), orderData: orderData1 },
+  // ];
+  // let value = orders.map((order) => order.value).reduce((acc, value) => { return acc.add(value) });
+  // 测试使用
+  let orders = [ { marketId: 0, value: 0, orderData: orderData1 },
+    { marketId: 0, value: 0, orderData: orderData1 },
   ];
-  let value = orders.map((order) => order.value).reduce((acc, value) => { return acc.add(value) });
+  value = 0
 
-  await sweepNft("0x5fbdb2315678afecb367f032d93f642f64180aa3", orders, {value: value, gasLimit: "300000"});
+  const contractAddr = "0xeeE61026AaC3d5cb750A50959e9A2A810AeB08B6";
+  await sweepNft(contractAddr, orders, {value: value, gasLimit: "300000"});
 }
 
 // We recommend this pattern to be able to use async/await everywhere
