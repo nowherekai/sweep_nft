@@ -5,7 +5,10 @@
     "hardhat": "^2.12.7"
   },
   "dependencies": {
+    "@opensea/seaport-js": "^1.0.8",
     "@openzeppelin/contracts": "^4.8.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "opensea-js": "^4.0.13",
+    "web3": "^1.8.2"
   }
 }
