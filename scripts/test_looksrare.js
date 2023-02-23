@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 
 const { BigNumber  } = require("ethers");
-const { signMakerOrder, addressesByNetwork, SupportedChainId, MakerOrder  } = require("@looksrare/sdk");
+const { addressesByNetwork, SupportedChainId } = require("@looksrare/sdk");
 const { LooksRareExchangeAbi  } = require("@looksrare/sdk/abis");
 
 async function sweepNft(nftSweepAddress, orderDatas, value) {

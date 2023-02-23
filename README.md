@@ -27,6 +27,8 @@ opensea 测试网上找到两个出售的NFT，获取calldata，然后作为参�
 [一个订单成功](https://goerli.etherscan.io/tx/0xacee3ae65454bbbf08af6b1cdc0437a9ba0ca71aa1b3aa015b2c6ee55ab95212)
 
 ### 多个交易所混合
+[looksrae和opensea各一个订单](https://goerli.etherscan.io/tx/0xc4139f1949fa7747be59891d683ea9574de2cc082b09c6c73f4c2584f3dc945d)
+测试成功
 
 ## 过程
 1. 开发扫货合约，编写本地测试和部署脚本。部署到goerli
@@ -58,6 +60,10 @@ openseajs sdk 调用遇到了本机代理问题(没有代理无法访问)，没�
 这样再增加其他市场时，无需修改扫货合约本身，只要新增适配合约即可。
 
 补了本地测试，修改部署脚本和增加市场的脚本等.
+
+4. 一次从多个交易所购买多个订单
+
+构造looksrare订单和opensea订单测试，测试成功
 
 ## 安装测试和部署
 ```
