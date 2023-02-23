@@ -63,13 +63,25 @@ contract MarketPlaceMock {
     require(item.state == State.CREATED);
     require(msg.value >= item.price);
 
-    console.log(msg.sender);
-    console.log(item.seller);
-    console.log(item.tokenId);
     IERC721(item.nftContractAddress).safeTransferFrom(item.seller, to, item.tokenId);
     (item.seller).transfer(item.price);
     //不支持其他合约调用
     // payable(msg.sender).transfer(msg.value - item.price);
+
+    item.state = State.SUCCESS;
+    item.buyer = payable(msg.sender);
+  }
+
+  function buyItemV2(address _tokenAddr, uint256 _tokenId, uint256 itemId, uint256 price, address to) public payable {
+    require(to == msg.sender, "Invalid Order");
+    require(itemId <= _currentItemId.current());
+    MarketItem storage item = _marketItems[itemId];
+
+    require(item.state == State.CREATED);
+    require(msg.value >= item.price);
+
+    IERC721(item.nftContractAddress).safeTransferFrom(item.seller, to, item.tokenId);
+    (item.seller).transfer(item.price);
 
     item.state = State.SUCCESS;
     item.buyer = payable(msg.sender);

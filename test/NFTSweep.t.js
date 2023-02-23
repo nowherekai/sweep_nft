@@ -25,6 +25,7 @@ describe("NFTSweep", function () {
     const MarketPlaceMock = await ethers.getContractFactory("MarketPlaceMock");
     const marketPlaceMock = await MarketPlaceMock.deploy();
     await marketPlaceMock.deployed()
+    console.log(marketPlaceMock.address);
 
     const MarketPlaceMockTwo = await ethers.getContractFactory("MarketPlaceMock");
     const marketPlaceMockTwo = await MarketPlaceMock.deploy();
@@ -45,9 +46,14 @@ describe("NFTSweep", function () {
     const nftSweep = await NFTSweep.deploy();
     await nftSweep.deployed();
 
-    await nftSweep.addMarket("0x0000000000000000000000000000000000000000");
-    await nftSweep.addMarket(marketPlaceMock.address);
-    await nftSweep.addMarket(marketPlaceMockTwo.address);
+    const MarketPlaceMockLogic = await ethers.getContractFactory("MarketPlaceMockLogic");
+    const marketPlaceMockLogic = await MarketPlaceMockLogic.deploy();
+    await marketPlaceMockLogic.deployed()
+
+    await nftSweep.addMarket("0x0000000000000000000000000000000000000000", false);
+    await nftSweep.addMarket(marketPlaceMock.address, false);
+    await nftSweep.addMarket(marketPlaceMockTwo.address, false);
+    await nftSweep.addMarket(marketPlaceMockLogic.address, true);
 
     return { nftMock, marketPlaceMock, marketPlaceMockTwo, nftSweep, owner, otherAccount };
   }
@@ -66,8 +72,8 @@ describe("NFTSweep", function () {
           { marketId: 1, value: ethers.utils.parseEther("0.01"), orderData: orderData2 } ];
         await nftSweep.connect(otherAccount).batchBuyFromMarkets(orders, {value: ethers.utils.parseEther("0.02") });
 
-        expect(await nftMock.ownerOf(1)).eq(otherAccount.address);
-        expect(await nftMock.ownerOf(2)).eq(otherAccount.address);
+        expect(await nftMock.ownerOf(1)).to.equal(otherAccount.address);
+        expect(await nftMock.ownerOf(2)).to.equal(otherAccount.address);
       });
 
       it("Should work if partial failed", async function () {
@@ -81,8 +87,8 @@ describe("NFTSweep", function () {
           { marketId: 1, value: ethers.utils.parseEther("0.01"), orderData: orderData2 } ];
         await nftSweep.connect(otherAccount).batchBuyFromMarkets(orders, {value: ethers.utils.parseEther("0.02") });
 
-        expect(await nftMock.ownerOf(1)).eq(owner.address);
-        expect(await nftMock.ownerOf(2)).eq(otherAccount.address);
+        expect(await nftMock.ownerOf(1)).to.equal(owner.address);
+        expect(await nftMock.ownerOf(2)).to.equal(otherAccount.address);
       });
     });
 
@@ -101,9 +107,9 @@ describe("NFTSweep", function () {
           { marketId: 2, value: ethers.utils.parseEther("0.01"), orderData: orderData3 } ];
         await nftSweep.connect(otherAccount).batchBuyFromMarkets(orders, {value: ethers.utils.parseEther("0.03") });
 
-        expect(await nftMock.ownerOf(1)).eq(otherAccount.address);
-        expect(await nftMock.ownerOf(2)).eq(otherAccount.address);
-        // expect(await nftMock.ownerOf(3)).eq(otherAccount.address);
+        expect(await nftMock.ownerOf(1)).to.equal(otherAccount.address);
+        expect(await nftMock.ownerOf(2)).to.equal(otherAccount.address);
+        // expect(await nftMock.ownerOf(3)).to.equal(otherAccount.address);
       });
 
       it("Should work if partial failed", async function () {
@@ -120,10 +126,38 @@ describe("NFTSweep", function () {
           { marketId: 2, value: ethers.utils.parseEther("0.01"), orderData: orderData3 } ];
         await nftSweep.connect(otherAccount).batchBuyFromMarkets(orders, {value: ethers.utils.parseEther("0.03") });
 
-        expect(await nftMock.ownerOf(1)).eq(owner.address);
-        expect(await nftMock.ownerOf(2)).eq(otherAccount.address);
-        expect(await nftMock.ownerOf(3)).eq(otherAccount.address);
+        expect(await nftMock.ownerOf(1)).to.equal(owner.address);
+        expect(await nftMock.ownerOf(2)).to.equal(otherAccount.address);
+        expect(await nftMock.ownerOf(3)).to.equal(otherAccount.address);
       });
     });
+
+    describe("through delegatecall", function() {
+      it("Should not work use call", async function () {
+        const { nftSweep, nftMock, marketPlaceMock, owner, otherAccount } = await loadFixture(deployContract);
+
+        let iface = marketPlaceMock.interface;
+        let orderData1 = iface.encodeFunctionData("buyItemV2",
+          [nftMock.address, 1, 1, ethers.utils.parseEther("0.01"), otherAccount.address]);
+
+        let orders = [ { marketId: 1, value: ethers.utils.parseEther("0.01"), orderData: orderData1 } ];
+        await nftSweep.connect(otherAccount).batchBuyFromMarkets(orders, {value: ethers.utils.parseEther("0.01") });
+
+        expect(await nftMock.ownerOf(1)).to.not.equal(otherAccount.address);
+      });
+
+      it("Should work use delegatecall", async function () {
+        const { nftSweep, nftMock, marketPlaceMock, owner, otherAccount } = await loadFixture(deployContract);
+
+        let iface = marketPlaceMock.interface;
+        let orderData1 = iface.encodeFunctionData("buyItemV2",
+          [nftMock.address, 1, 1, ethers.utils.parseEther("0.01"), otherAccount.address]);
+
+        let orders = [ { marketId: 3, value: ethers.utils.parseEther("0.01"), orderData: orderData1 } ];
+        await nftSweep.connect(otherAccount).batchBuyFromMarkets(orders, {value: ethers.utils.parseEther("0.01") });
+
+        expect(await nftMock.ownerOf(1)).to.equal(otherAccount.address);
+      });
+    })
   });
 })

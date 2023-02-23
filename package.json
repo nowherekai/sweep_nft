@@ -5,6 +5,7 @@
     "hardhat": "^2.12.7"
   },
   "dependencies": {
+    "@looksrare/sdk": "^0.12.1",
     "@opensea/seaport-js": "^1.0.8",
     "@openzeppelin/contracts": "^4.8.1",
     "dotenv": "^16.0.3",

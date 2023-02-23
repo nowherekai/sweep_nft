@@ -77,7 +77,7 @@ async function main() {
     { marketId: 0, value: orderData2.value, orderData: orderData2.data },
   ];
   let value = orders.map((order) => { return order.value }).reduce((value, acc) => { return acc.add(value) })
-  const contractAddr = "0xeeE61026AaC3d5cb750A50959e9A2A810AeB08B6";
+  const contractAddr = "0xff633585E090F84F5a2C19CF73DAE2eD2f66dd49";
   const tx = await sweepNft(contractAddr, orders, value);
   console.log(tx)
 }
