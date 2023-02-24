@@ -1,11 +1,5 @@
 const hre = require("hardhat");
 
-function decodeOpenseaCalldata(calldata) {
-  const iSeaPort = new hre.ethers.utils.Interface(abiJson);
-  const order = iSeaPort.decodeFunctionData("fulfillBasicOrder", calldata);
-  return order
-}
-
 async function sweepNft(nftSweepAddress, orderDatas, value) {
   const nftSweepContract = await ethers.getContractAt("NFTSweep", nftSweepAddress);
   return await nftSweepContract.batchBuyFromMarkets(orderDatas, { value: value, gasLimit: "300000" });
@@ -23,7 +17,7 @@ async function main() {
     { marketId: 0, value: ethers.utils.parseEther("0.02"), orderData: orderData2 },
   ];
   let value = ethers.utils.parseEther("0.04");
-  const contractAddr = "0xeeE61026AaC3d5cb750A50959e9A2A810AeB08B6";
+  const contractAddr = "0xff633585E090F84F5a2C19CF73DAE2eD2f66dd49";
   const tx = await sweepNft(contractAddr, orders, value);
   console.log(tx)
 }

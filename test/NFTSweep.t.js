@@ -146,6 +146,7 @@ describe("NFTSweep", function () {
         expect(await nftMock.ownerOf(1)).to.not.equal(otherAccount.address);
       });
 
+      // logic 合约写死了合约地址,测试有可能失败，只需要修改contracts/test/MarketPlaceMockLogic.sol 里对应地址即可
       it("Should work use delegatecall", async function () {
         const { nftSweep, nftMock, marketPlaceMock, owner, otherAccount } = await loadFixture(deployContract);
 

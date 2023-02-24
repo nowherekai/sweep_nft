@@ -54,7 +54,7 @@ contract LooksRareLogic {
       address orignalTaker = takerBid.taker;
       takerBid.taker = address(this);
 
-      //looksrare exchange goerli
+      //looksrare exchange goerli address
       (bool success, ) = 0xD112466471b5438C1ca2D218694200e49d81D047.call{value: takerBid.price}(
         abi.encodeWithSelector(selector, takerBid, makerAsk)
       );

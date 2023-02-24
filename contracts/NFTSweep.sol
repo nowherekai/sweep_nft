@@ -64,7 +64,6 @@ contract NFTSweep is Ownable, IERC721Receiver {
       }
       //测试用
       emit BuyLog(market.marketAddr, success);
-      //TODO return remain mgs.value to user
       // if (!success) {
       //   assembly {
       //     returndatacopy(0, 0, returndatasize())

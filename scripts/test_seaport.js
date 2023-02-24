@@ -11,6 +11,12 @@ const { Seaport  } = require("@opensea/seaport-js");
 require("dotenv").config()
 const GOERLI_URL = process.env.GOERLI_URL;
 
+const provider = new Web3.providers.HttpProvider(GOERLI_URL)
+const openseaSDK = new OpenSeaSDK(provider, {
+  networkName: Network.Goerli
+})
+
+// hack opensea-js, 增加fulfillOrderCalldata 方法，返回actions，actions可以获得calldata数据
 // public async fulfillOrderCalldata({
 //     order,
 //     accountAddress,
@@ -40,13 +46,13 @@ const GOERLI_URL = process.env.GOERLI_URL;
 //   }
 //
 
+// 获取opensea订单数据
 // recipientAddress  nft 接受地址
 async function getOrderCallData(contractAddr, tokenId, recipientAddress) {
   let order = await openseaSDK.api.getOrder({ side: "ask", assetContractAddress, tokenId });
 
-  //本机hack了 opensea-js, 这里跑不同,只做思路展示用
+  //本机hack了opensea-js, 这里跑不同
   let actions = await openseaSDK.fulfillOrderCalldata({ order, accountAddress, recipientAddress: accountAddress });
-  console.log(actions);
 
   let action = actions[actions.length - 1];
   let buildTransaction = action.transactionMethods.buildTransaction;
